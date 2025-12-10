@@ -3,16 +3,16 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Student;
+use App\Models\Course;
 
-class StudentSeeder extends Seeder
+class CourseSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        
-        Student::factory()->count(50)->create();
+        // Create 10 random courses
+        Course::factory()->count(10)->create();
     }
 }

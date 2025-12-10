@@ -1,0 +1,63 @@
+@extends('layouts.main')
+
+@section('title', 'Edit Course')
+
+@section('content')
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="h4 mb-3">Edit Course</h1>
+
+                    @if($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <form action="{{ route('courses.update', $course) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="mb-3">
+                            <label class="form-label">Code</label>
+                            <input type="text" name="code" class="form-control"
+                                   value="{{ old('code', $course->code) }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Title</label>
+                            <input type="text" name="title" class="form-control"
+                                   value="{{ old('title', $course->title) }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea name="description" class="form-control" rows="3">
+{{ old('description', $course->description) }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Credits</label>
+                            <input type="number" name="credits" class="form-control"
+                                   value="{{ old('credits', $course->credits) }}">
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ route('courses.index') }}" class="btn btn-outline-secondary">
+                                Back
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                Update Course
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection

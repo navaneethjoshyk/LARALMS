@@ -1,42 +1,56 @@
-@extends('layouts/admin')
+@extends('layouts.main')
+
+@section('title', 'Add Student')
+
 @section('content')
-    <div class="row">
-        <div class="col">
-            <h1 class="display-2">
-            Add a Student Profile
-            </h1>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="h4 mb-3">Add Student</h1>
+
+                    @if($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <form action="{{ route('students.store') }}" method="POST">
+                        @csrf
+
+                        <div class="mb-3">
+                            <label class="form-label">First name</label>
+                            <input type="text" name="fname" class="form-control"
+                                   value="{{ old('fname') }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Last name</label>
+                            <input type="text" name="lname" class="form-control"
+                                   value="{{ old('lname') }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control"
+                                   value="{{ old('email') }}">
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ route('students.index') }}" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                Save Student
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <form action="{{ route('students.store') }}" method="post">
-                @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                            @endforeach
-                    </ul>
-                </div>
-                @endif
-                {{ csrf_field() }}
-                <div class="mb-3">
-                    <label for="fname" class="form-label">First Name</label>
-                    <input type="text" class="form-control" id="fname" name="fname" aria-describedby="fname">
-                </div>
-                <div class="mb-3">
-                    label for="lname" class="form-label">Last Name</label>
-                    <input type="text" class="form-control" id="lname" name="lname" aria-describedby="lname">
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" aria-describedby="email">
-                    @error('email')
-                        <span class="text-danger" role="alert">
-                            <strong>{{ $message }}</strong>
-                            </span>
-                    @enderror
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
     </div>
 @endsection

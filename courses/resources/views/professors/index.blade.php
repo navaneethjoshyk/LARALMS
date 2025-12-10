@@ -1,12 +1,12 @@
 @extends('layouts.main')
 
-@section('title', 'Students')
+@section('title', 'Professors')
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="h3 mb-0">Students</h1>
-        <a href="{{ route('students.create') }}" class="btn btn-primary">
-            + Add Student
+        <h1 class="h3 mb-0">Professors</h1>
+        <a href="{{ route('professors.create') }}" class="btn btn-warning">
+            + Add Professor
         </a>
     </div>
 
@@ -14,9 +14,9 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    @if($students->isEmpty())
+    @if($professors->isEmpty())
         <div class="alert alert-info">
-            No students found. Click <strong>“Add Student”</strong> to create one.
+            No professors found. Click <strong>“Add Professor”</strong> to create one.
         </div>
     @else
         <div class="card shadow-sm">
@@ -28,25 +28,27 @@
                         <th>First name</th>
                         <th>Last name</th>
                         <th>Email</th>
-                        <th style="width: 140px;">Actions</th>
+                        <th>Department</th>
+                        <th style="width: 160px;">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($students as $student)
+                    @foreach($professors as $professor)
                         <tr>
-                            <td>{{ $student->id }}</td>
-                            <td>{{ $student->fname }}</td>
-                            <td>{{ $student->lname }}</td>
-                            <td>{{ $student->email }}</td>
+                            <td>{{ $professor->id }}</td>
+                            <td>{{ $professor->fname }}</td>
+                            <td>{{ $professor->lname }}</td>
+                            <td>{{ $professor->email }}</td>
+                            <td>{{ $professor->department }}</td>
                             <td>
-                                <a href="{{ route('students.edit', $student) }}" class="btn btn-sm btn-outline-primary">
+                                <a href="{{ route('professors.edit', $professor) }}"
+                                   class="btn btn-sm btn-outline-primary">
                                     Edit
                                 </a>
-                                {{-- Optional delete --}}
-                                <form action="{{ route('students.destroy', $student) }}"
+                                <form action="{{ route('professors.destroy', $professor) }}"
                                       method="POST"
                                       class="d-inline"
-                                      onsubmit="return confirm('Delete this student?')">
+                                      onsubmit="return confirm('Delete this professor?')">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-sm btn-outline-danger">

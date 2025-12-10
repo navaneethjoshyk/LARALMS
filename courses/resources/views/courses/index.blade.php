@@ -1,12 +1,12 @@
 @extends('layouts.main')
 
-@section('title', 'Students')
+@section('title', 'Courses')
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="h3 mb-0">Students</h1>
-        <a href="{{ route('students.create') }}" class="btn btn-primary">
-            + Add Student
+        <h1 class="h3 mb-0">Courses</h1>
+        <a href="{{ route('courses.create') }}" class="btn btn-success">
+            + Add Course
         </a>
     </div>
 
@@ -14,9 +14,9 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    @if($students->isEmpty())
+    @if($courses->isEmpty())
         <div class="alert alert-info">
-            No students found. Click <strong>“Add Student”</strong> to create one.
+            No courses found. Click <strong>“Add Course”</strong> to create one.
         </div>
     @else
         <div class="card shadow-sm">
@@ -25,28 +25,28 @@
                     <thead class="table-light">
                     <tr>
                         <th>ID</th>
-                        <th>First name</th>
-                        <th>Last name</th>
-                        <th>Email</th>
-                        <th style="width: 140px;">Actions</th>
+                        <th>Code</th>
+                        <th>Title</th>
+                        <th>Credits</th>
+                        <th style="width: 160px;">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($students as $student)
+                    @foreach($courses as $course)
                         <tr>
-                            <td>{{ $student->id }}</td>
-                            <td>{{ $student->fname }}</td>
-                            <td>{{ $student->lname }}</td>
-                            <td>{{ $student->email }}</td>
+                            <td>{{ $course->id }}</td>
+                            <td>{{ $course->code }}</td>
+                            <td>{{ $course->title }}</td>
+                            <td>{{ $course->credits }}</td>
                             <td>
-                                <a href="{{ route('students.edit', $student) }}" class="btn btn-sm btn-outline-primary">
+                                <a href="{{ route('courses.edit', $course) }}"
+                                   class="btn btn-sm btn-outline-primary">
                                     Edit
                                 </a>
-                                {{-- Optional delete --}}
-                                <form action="{{ route('students.destroy', $student) }}"
+                                <form action="{{ route('courses.destroy', $course) }}"
                                       method="POST"
                                       class="d-inline"
-                                      onsubmit="return confirm('Delete this student?')">
+                                      onsubmit="return confirm('Delete this course?')">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-sm btn-outline-danger">

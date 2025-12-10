@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
-use App\Http\Requests\StoreStudentRequest;
-use App\Http\Requests\UpdateStudentRequest;
+use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
@@ -13,9 +12,9 @@ class StudentController extends Controller
      */
     public function index()
     {
-       return view('students.index', [
-        'students' => Student::all()
-        ]);
+        $students = Student::all(); // will fetch fname, lname, email
+
+        return view('students.index', compact('students'));
     }
 
     /**
@@ -29,11 +28,19 @@ class StudentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreStudentRequest $request)
+    public function store(Request $request)
     {
-        student::create($request->validated());
-        session()->flash('student-created-message', 'Student ' . $request->fname . ' ' . $request->lname . ' created successfully!');
-        return redirect()->route('students.index');    
+        $data = $request->validate([
+            'fname' => 'required|string|max:255',
+            'lname' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+        ]);
+
+        Student::create($data);
+
+        return redirect()
+            ->route('students.index')
+            ->with('success', 'Student created successfully.');
     }
 
     /**
@@ -41,8 +48,7 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
-        return view('students.show', compact('student')
-        );
+        return view('students.show', compact('student'));
     }
 
     /**
@@ -56,11 +62,19 @@ class StudentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateStudentRequest $request, Student $student)
+    public function update(Request $request, Student $student)
     {
-        $student->update($request->validated());
-        session()->flash('student-updated-message', 'Student ' . $request->fname . ' ' . $request->lname . ' updated successfully!');
-        return redirect()->route('students.index');
+        $data = $request->validate([
+            'fname' => 'required|string|max:255',
+            'lname' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+        ]);
+
+        $student->update($data);
+
+        return redirect()
+            ->route('students.index')
+            ->with('success', 'Student updated successfully.');
     }
 
     /**
@@ -68,9 +82,10 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
-        $student = Student::withTrashed() -> where('id', $id) -> first();
-        $student -> forceDelete();
-        Session::Flash('success', 'Student deleted successfully');
-        return redirect() -> route('students.index');
+        $student->delete();
+
+        return redirect()
+            ->route('students.index')
+            ->with('success', 'Student deleted successfully.');
     }
 }

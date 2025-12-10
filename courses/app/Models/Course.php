@@ -4,16 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Student extends Model
+class Course extends Model
 {
     use HasFactory;
-    use SoftDeletes; // because you have deleted_at column
 
     protected $fillable = [
-        'fname',
-        'lname',
-        'email',
+        'code',
+        'title',
+        'description',
+        'credits',
     ];
 }
