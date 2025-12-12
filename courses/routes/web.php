@@ -9,11 +9,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ProfessorController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-*/
+
 
 
 Route::get('/', function () {
@@ -24,8 +20,11 @@ Route::get('/', function () {
 Route::resource('students', StudentController::class);
 Route::resource('courses', CourseController::class);
 Route::resource('professors', ProfessorController::class);
+Route::get(
+    'courses',
+    [CourseController::class, 'index']
+    )->name('courses.index');
 
-// Breeze / Inertia dashboard
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

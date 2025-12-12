@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Models\Course;
 use Illuminate\Http\Request;
 
 class StudentController extends Controller
@@ -12,7 +13,8 @@ class StudentController extends Controller
      */
     public function index()
     {
-        $students = Student::all(); // will fetch fname, lname, email
+        // Eager load courses so you can show them if you want
+        $students = Student::with('courses')->get();
 
         return view('students.index', compact('students'));
     }
@@ -22,7 +24,10 @@ class StudentController extends Controller
      */
     public function create()
     {
-        return view('students.create');
+        // All courses to show as checkboxes
+        $courses = Course::all();
+
+        return view('students.create', compact('courses'));
     }
 
     /**
@@ -30,13 +35,24 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
+        
         $data = $request->validate([
-            'fname' => 'required|string|max:255',
-            'lname' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'fname'      => 'required|string|max:255',
+            'lname'      => 'required|string|max:255',
+            'email'      => 'required|email|max:255|unique:students,email',
+            'courses'    => 'array',
+            'courses.*'  => 'integer|exists:courses,id',
         ]);
 
-        Student::create($data);
+        
+        $student = Student::create([
+            'fname' => $data['fname'],
+            'lname' => $data['lname'],
+            'email' => $data['email'],
+        ]);
+
+        
+        $student->courses()->sync($request->input('courses', []));
 
         return redirect()
             ->route('students.index')
@@ -48,6 +64,8 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
+        $student->load('courses');
+
         return view('students.show', compact('student'));
     }
 
@@ -56,7 +74,10 @@ class StudentController extends Controller
      */
     public function edit(Student $student)
     {
-        return view('students.edit', compact('student'));
+        $courses = Course::all();
+        $student->load('courses');
+
+        return view('students.edit', compact('student', 'courses'));
     }
 
     /**
@@ -65,12 +86,22 @@ class StudentController extends Controller
     public function update(Request $request, Student $student)
     {
         $data = $request->validate([
-            'fname' => 'required|string|max:255',
-            'lname' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'fname'      => 'required|string|max:255',
+            'lname'      => 'required|string|max:255',
+            'email'      => 'required|email|max:255|unique:students,email,' . $student->id,
+            'courses'    => 'array',
+            'courses.*'  => 'integer|exists:courses,id',
         ]);
 
-        $student->update($data);
+        
+        $student->update([
+            'fname' => $data['fname'],
+            'lname' => $data['lname'],
+            'email' => $data['email'],
+        ]);
+
+        
+        $student->courses()->sync($request->input('courses', []));
 
         return redirect()
             ->route('students.index')
@@ -82,6 +113,10 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
+        
+        $student->courses()->detach();
+
+        
         $student->delete();
 
         return redirect()

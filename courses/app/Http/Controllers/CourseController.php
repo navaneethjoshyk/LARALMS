@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Professor;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
@@ -12,7 +13,7 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $courses = Course::all();
+        $courses = Course::with('professors')->get();
 
         return view('courses.index', compact('courses'));
     }
@@ -22,7 +23,9 @@ class CourseController extends Controller
      */
     public function create()
     {
-        return view('courses.create');
+        $professors = Professor::all();
+
+        return view('courses.create', compact('professors'));
     }
 
     /**
@@ -31,13 +34,23 @@ class CourseController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'code'        => 'required|string|max:50',
+            'code'        => 'required|string|max:255',
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
-            'credits'     => 'required|integer|min:1',
+            'credits'     => 'required|integer|min:1|max:10',
+            'professors'  => 'array',
+            'professors.*'=> 'integer|exists:professors,id',
         ]);
 
-        Course::create($data);
+        $course = Course::create([
+            'code'        => $data['code'],
+            'title'       => $data['title'],
+            'description' => $data['description'] ?? null,
+            'credits'     => $data['credits'],
+        ]);
+
+        // Assign selected professors
+        $course->professors()->sync($request->input('professors', []));
 
         return redirect()
             ->route('courses.index')
@@ -45,20 +58,14 @@ class CourseController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Course $course)
-    {
-        return view('courses.show', compact('course'));
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(Course $course)
     {
-        // Simple, no logic: just send one $course to the view
-        return view('courses.edit', compact('course'));
+        $professors = Professor::all();
+        $course->load('professors');
+
+        return view('courses.edit', compact('course', 'professors'));
     }
 
     /**
@@ -67,13 +74,23 @@ class CourseController extends Controller
     public function update(Request $request, Course $course)
     {
         $data = $request->validate([
-            'code'        => 'required|string|max:50',
+            'code'        => 'required|string|max:255',
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
-            'credits'     => 'required|integer|min:1',
+            'credits'     => 'required|integer|min:1|max:10',
+            'professors'  => 'array',
+            'professors.*'=> 'integer|exists:professors,id',
         ]);
 
-        $course->update($data);
+        $course->update([
+            'code'        => $data['code'],
+            'title'       => $data['title'],
+            'description' => $data['description'] ?? null,
+            'credits'     => $data['credits'],
+        ]);
+
+        // Update assigned professors
+        $course->professors()->sync($request->input('professors', []));
 
         return redirect()
             ->route('courses.index')
@@ -85,6 +102,8 @@ class CourseController extends Controller
      */
     public function destroy(Course $course)
     {
+        $course->professors()->detach();
+        $course->students()->detach();
         $course->delete();
 
         return redirect()
